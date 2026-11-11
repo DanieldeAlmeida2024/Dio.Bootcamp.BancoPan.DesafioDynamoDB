@@ -1,5 +1,16 @@
 @startuml
-class RepositorioMusicas
-class TabelaDynamoDB
-RepositorioMusicas --> TabelaDynamoDB : put_item/get_item/delete_item/scan
+title Catálogo DynamoDB - componentes
+actor Operador
+component "CLI principal.py" as CLI
+component "RepositorioMusicas" as Repo
+component "boto3.resource('dynamodb')" as SDK
+database "Music\nPK Artist\nSK SongTitle" as Dynamo
+Operador --> CLI
+CLI --> Repo : CRUD
+Repo --> SDK : put/get/delete/scan
+SDK --> Dynamo
+note right of CLI
+DynamoDB Local por padrão;
+--aws habilita conexão real.
+end note
 @enduml
