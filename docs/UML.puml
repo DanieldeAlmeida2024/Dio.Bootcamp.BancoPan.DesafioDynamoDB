@@ -1,0 +1,5 @@
+@startuml
+class RepositorioMusicas
+class TabelaDynamoDB
+RepositorioMusicas --> TabelaDynamoDB : put_item/get_item/delete_item/scan
+@enduml

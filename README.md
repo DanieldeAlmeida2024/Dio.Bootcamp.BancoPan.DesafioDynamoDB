@@ -1,3 +1,42 @@
+# Laboratório DynamoDB — catálogo de músicas
+
+Projeto de aprendizado inspirado no desafio DynamoDB da DIO. Inclui comandos AWS CLI originais e, adicionalmente, **CLI Python com operações de cadastro, consulta, listagem e exclusão**.
+
+## Executar localmente
+
+Requer Python 3.10+, Java/DynamoDB Local (ou container equivalente) e boto3.
+
+```bash
+python -m pip install -r requirements.txt
+python principal.py criar-tabela
+python principal.py cadastrar --artista "Elis" --titulo "Exemplo" --album "Disco"
+python principal.py consultar --artista "Elis" --titulo "Exemplo"
+python principal.py listar --limite 20
+python principal.py excluir --artista "Elis" --titulo "Exemplo"
+```
+
+Por padrão os comandos utilizam `http://localhost:8000` com credenciais fictícias locais. **Somente `--aws` conecta à AWS real**, podendo gerar custos. A configuração e a tabela precisam existir para operações de negócio.
+
+## Testes
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Os testes utilizam uma tabela simulada: a integração real com DynamoDB Local/AWS é uma etapa separada.
+
+## Arquitetura
+
+- `principal.py`: CLI.
+- `aplicacao/repositorio.py`: adaptação boto3 com validação.
+- `tests/test_musicas.py`: testes de comportamento.
+- `docs/REQUISITOS.md`, `docs/ARQUITETURA.md`, `docs/UML.puml`, `docs/PLANO_TESTES.md`: documentação.
+- `AGENTS.md`: contexto para ferramentas de IA.
+
+---
+
+## Material original do desafio
+
 # dio-live-dynamodb
 Repositório para o live coding do dia 30/09/2021 sobre o Amazon DynamoDB
 
