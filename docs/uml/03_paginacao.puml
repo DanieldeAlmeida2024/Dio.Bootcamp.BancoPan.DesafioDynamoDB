@@ -1,0 +1,16 @@
+@startuml
+actor Operador
+participant "principal.py" as CLI
+participant "RepositorioMusicas" as Repo
+participant "Tabela boto3" as DB
+Operador -> CLI : listar --limite 20
+CLI -> Repo : listar_pagina(20)
+Repo -> DB : scan(Limit=20)
+DB --> Repo : Items + LastEvaluatedKey
+Repo --> CLI : itens + proxima_chave
+CLI --> Operador : JSON
+note right of Repo
+O adaptador suporta chave de continuação;
+a CLI não recebe página seguinte.
+end note
+@enduml

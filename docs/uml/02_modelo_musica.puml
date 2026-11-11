@@ -1,0 +1,22 @@
+@startuml
+title Entidade e chave de Música
+class Musica <<item DynamoDB>> {
+ +Artist: String <<HASH>>
+ +SongTitle: String <<RANGE>>
+ +AlbumTitle: String
+}
+class RepositorioMusicas {
+ +validar(artista,titulo)
+ +cadastrar(artista,titulo,album)
+ +consultar(artista,titulo)
+ +excluir(artista,titulo)
+ +listar_pagina(limite,chave_continuacao)
+}
+RepositorioMusicas --> Musica
+note right of Musica
+O par (Artist,SongTitle)
+identifica o item.
+put_item sem condição
+pode sobrescrever.
+end note
+@enduml
