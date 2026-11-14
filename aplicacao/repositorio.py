@@ -7,6 +7,8 @@ class RepositorioMusicas:
 
     @staticmethod
     def validar(artista, titulo):
+        if not isinstance(artista, str) or not isinstance(titulo, str):
+            raise ErroValidacao('Artista e título devem ser textos.')
         artista, titulo = artista.strip(), titulo.strip()
         if not artista or not titulo:
             raise ErroValidacao('Artista e título são obrigatórios.')
@@ -16,6 +18,8 @@ class RepositorioMusicas:
 
     def cadastrar(self, artista, titulo, album=''):
         artista, titulo = self.validar(artista, titulo)
+        if not isinstance(album, str) or len(album.strip()) > 200:
+            raise ErroValidacao('Álbum deve ser texto com até 200 caracteres.')
         item = {'Artist': artista, 'SongTitle': titulo, 'AlbumTitle': album.strip()}
         self.tabela.put_item(Item=item)
         return item
@@ -26,10 +30,13 @@ class RepositorioMusicas:
 
     def excluir(self, artista, titulo):
         artista, titulo = self.validar(artista, titulo)
-        self.tabela.delete_item(Key={'Artist': artista, 'SongTitle': titulo})
+        resposta = self.tabela.delete_item(
+            Key={'Artist': artista, 'SongTitle': titulo}, ReturnValues='ALL_OLD'
+        )
+        return bool(resposta.get('Attributes'))
 
     def listar_pagina(self, limite=20, chave_continuacao=None):
-        if not 1 <= limite <= 100:
+        if type(limite) is not int or not 1 <= limite <= 100:
             raise ErroValidacao('Limite deve ser de 1 a 100.')
         argumentos = {'Limit': limite}
         if chave_continuacao:

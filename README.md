@@ -17,6 +17,10 @@ python principal.py excluir --artista "Elis" --titulo "Exemplo"
 
 Por padrão os comandos utilizam `http://localhost:8000` com credenciais fictícias locais. **Somente `--aws` conecta à AWS real**, podendo gerar custos. A configuração e a tabela precisam existir para operações de negócio.
 
+## Sem exclusão falsa
+
+O comando `excluir` usa `DeleteItem(ReturnValues='ALL_OLD')` e apresenta `{"excluido": true}` **apenas quando havia um registro**. Excluir uma chave inexistente retorna `false`. O laboratório também valida tipos e limites de artista, título e álbum.
+
 ## Testes
 
 ```bash
