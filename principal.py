@@ -36,7 +36,7 @@ def main():
     if args.comando == 'cadastrar': resultado = repo.cadastrar(args.artista, args.titulo, args.album)
     elif args.comando == 'consultar': resultado = repo.consultar(args.artista, args.titulo)
     elif args.comando == 'excluir':
-        repo.excluir(args.artista, args.titulo); resultado = {'excluido': True}
+        resultado = {'excluido': repo.excluir(args.artista, args.titulo)}
     else: resultado = repo.listar_pagina(limite=args.limite)
     print(json.dumps(resultado, ensure_ascii=False, indent=2))
 
