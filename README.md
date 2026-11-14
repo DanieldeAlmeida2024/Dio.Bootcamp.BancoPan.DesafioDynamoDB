@@ -41,7 +41,7 @@ Os testes utilizam uma tabela simulada: a integração real com DynamoDB Local/A
 
 ## Material original do desafio
 
-# dio-live-dynamodb
+## Referência do desafio DynamoDB da DIO
 Repositório para o live coding do dia 30/09/2021 sobre o Amazon DynamoDB
 
 ### Serviço utilizado
