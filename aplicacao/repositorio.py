@@ -21,7 +21,18 @@ class RepositorioMusicas:
         if not isinstance(album, str) or len(album.strip()) > 200:
             raise ErroValidacao('Álbum deve ser texto com até 200 caracteres.')
         item = {'Artist': artista, 'SongTitle': titulo, 'AlbumTitle': album.strip()}
-        self.tabela.put_item(Item=item)
+        # PutItem sem condição é UPSERT e apagaria metadados anteriores.
+        # A condição é avaliada atomicamente no DynamoDB (inclusive Local).
+        try:
+            self.tabela.put_item(
+                Item=item, ConditionExpression='attribute_not_exists(Artist)'
+            )
+        except Exception as erro:
+            resposta = getattr(erro, 'response', None)
+            if isinstance(resposta, dict) and isinstance(resposta.get('Error'), dict):
+                if resposta['Error'].get('Code') == 'ConditionalCheckFailedException':
+                    raise ErroValidacao('Música já cadastrada para artista e título.') from erro
+            raise
         return item
 
     def consultar(self, artista, titulo):
