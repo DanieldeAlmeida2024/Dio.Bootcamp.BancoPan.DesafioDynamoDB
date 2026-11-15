@@ -3,7 +3,14 @@ from aplicacao.repositorio import RepositorioMusicas, ErroValidacao
 
 class TabelaFalsa:
     def __init__(self): self.dados = {}
-    def put_item(self, Item): self.dados[(Item['Artist'], Item['SongTitle'])] = Item
+    def put_item(self, Item, ConditionExpression):
+        assert ConditionExpression == 'attribute_not_exists(Artist)'
+        chave = (Item['Artist'], Item['SongTitle'])
+        if chave in self.dados:
+            erro = RuntimeError('condição do DynamoDB violada')
+            erro.response = {'Error': {'Code': 'ConditionalCheckFailedException'}}
+            raise erro
+        self.dados[chave] = Item
     def get_item(self, Key):
         item = self.dados.get((Key['Artist'], Key['SongTitle']))
         return {'Item': item} if item else {}
@@ -24,6 +31,19 @@ class TestesMusicas(unittest.TestCase):
         self.assertIsNone(self.repo.consultar('Elis', 'Exemplo'))
     def test_chaves_invalidas(self):
         with self.assertRaises(ErroValidacao): self.repo.cadastrar(' ', 'Exemplo')
+    def test_cadastro_duplicado_nao_apaga_album_antigo(self):
+        antigo = self.repo.cadastrar('Elis', 'Canção', 'Original')
+        with self.assertRaisesRegex(ErroValidacao, 'já cadastrada'):
+            self.repo.cadastrar('Elis', 'Canção', 'Substituto')
+        self.assertEqual(antigo, self.repo.consultar('Elis', 'Canção'))
+        self.assertEqual('Original', self.repo.consultar('Elis', 'Canção')['AlbumTitle'])
+
+    def test_outro_artista_ou_titulo_pode_ter_registro_proprio(self):
+        self.repo.cadastrar('Elis', 'Canção', 'Disco A')
+        self.repo.cadastrar('Elis', 'Outra', 'Disco B')
+        self.repo.cadastrar('Outro', 'Canção', 'Disco C')
+        self.assertEqual(3, len(self.repo.listar_pagina()['itens']))
+
     def test_paginacao(self):
         with self.assertRaises(ErroValidacao): self.repo.listar_pagina(999)
 
